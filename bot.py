@@ -57,7 +57,6 @@ Preferred contact (WhatsApp/Call).",
         "hi": "/start लिखकर मेनू फिर से देखें।",
     },
 }
-
 # ---------- Helpers ----------
 def get_lang(user_id: int) -> str:
     return user_lang.get(user_id, "en")

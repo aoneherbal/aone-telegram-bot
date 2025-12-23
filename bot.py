@@ -21,56 +21,30 @@ user_lang = {}
 # ---------- Texts ----------
 TEXTS = {
     "start": {
-        "en": "Welcome to AOne Herbal 🌿
-
-Please choose your language.",
-        "hi": "AOne Herbal में आपका स्वागत है 🌿
-
-कृपया अपनी भाषा चुनें।",
+        "en": "Welcome to AOne Herbal. Please choose your language.",
+        "hi": "AOne Herbal me aapka swagat hai. Kripya bhasha chunen.",
     },
     "menu_title": {
         "en": "What would you like to do?",
-        "hi": "आप क्या करना चाहते हैं?",
+        "hi": "Aap kya karna chahte hain?",
     },
     "menu_buttons": {
-        "en": ["🧴 Product info", "🛒 Order / Enquiry"],
-        "hi": ["🧴 प्रोडक्ट जानकारी", "🛒 ऑर्डर / पूछताछ"],
+        "en": ["Product info", "Order / Enquiry"],
+        "hi": ["Product jankari", "Order / Poochtaach"],
     },
     "product_info": {
-        "en": "Share the product name or concern (e.g. hairfall, gas, diabetes).",
-        "hi": "प्रोडक्ट का नाम या समस्या लिखें (जैसे hairfall, gas, diabetes)।",
+        "en": "Share the product name or concern (for example hairfall, gas, diabetes).",
+        "hi": "Product ka naam ya problem likhiye (jaise hairfall, gas, diabetes).",
     },
     "order_info": {
-        "en": "Please share:
-Name
-City
-Product name
-Preferred contact (WhatsApp/Call).",
-        "hi": "कृपया भेजें:
-नाम
-शहर
-प्रोडक्ट का नाम
-संपर्क तरीका (WhatsApp/कॉल)।",
+        "en": "Please share: Name, City, Product name, Contact (WhatsApp or Call).",
+        "hi": "Kripya bhejen: Naam, Shehar, Product ka naam, Contact (WhatsApp ya Call).",
     },
     "unknown": {
         "en": "Type /start to see the menu again.",
-        "hi": "/start लिखकर मेनू फिर से देखें।",
+        "hi": "/start likhkar menu fir se dekhen.",
     },
 }
-# ---------- Helpers ----------
-def get_lang(user_id: int) -> str:
-    return user_lang.get(user_id, "en")
-
-
-def main_menu_keyboard(lang: str) -> InlineKeyboardMarkup:
-    labels = TEXTS["menu_buttons"][lang]
-    return InlineKeyboardMarkup(
-        [
-            [InlineKeyboardButton(labels[0], callback_data="menu_product")],
-            [InlineKeyboardButton(labels[1], callback_data="menu_order")],
-        ]
-    )
-
 # ---------- Handlers ----------
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id

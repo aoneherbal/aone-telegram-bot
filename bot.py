@@ -1,5 +1,4 @@
 import os
-import asyncio
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
     ApplicationBuilder,
@@ -16,7 +15,7 @@ if not BOT_TOKEN:
     raise RuntimeError("BOT_TOKEN environment variable not set")
 
 # Simple in‑memory language store: {user_id: "en" or "hi"}
-user_lang = {}
+user_lang: dict[int, str] = {}
 
 # ---------- Texts ----------
 TEXTS = {
@@ -45,15 +44,29 @@ TEXTS = {
         "hi": "/start likhkar menu fir se dekhen.",
     },
 }
+
+# ---------- Helpers ----------
+def get_lang(user_id: int) -> str:
+    return user_lang.get(user_id, "en")
+
+
+def main_menu_keyboard(lang: str) -> InlineKeyboardMarkup:
+    labels = TEXTS["menu_buttons"][lang]
+    return InlineKeyboardMarkup(
+        [
+            [InlineKeyboardButton(labels[0], callback_data="menu_product")],
+            [InlineKeyboardButton(labels[1], callback_data="menu_order")],
+        ]
+    )
+
 # ---------- Handlers ----------
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
-    # Language select buttons
     keyboard = InlineKeyboardMarkup(
         [
             [
-                InlineKeyboardButton("English 🇬🇧", callback_data="lang_en"),
-                InlineKeyboardButton("हिन्दी 🇮🇳", callback_data="lang_hi"),
+                InlineKeyboardButton("English", callback_data="lang_en"),
+                InlineKeyboardButton("Hindi", callback_data="lang_hi"),
             ]
         ]
     )
@@ -87,11 +100,10 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def text_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     lang = get_lang(user_id)
-    # For now just echo a friendly message; later we’ll connect Google Sheets.
     await update.message.reply_text(TEXTS["unknown"][lang])
 
 # ---------- Main ----------
-async def main():
+def main():
     app = ApplicationBuilder().token(BOT_TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
@@ -99,7 +111,7 @@ async def main():
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, text_handler))
 
     print("Bot started with polling...")
-    await app.run_polling()
+    app.run_polling()
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()

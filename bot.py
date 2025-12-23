@@ -14,34 +14,34 @@ BOT_TOKEN = os.getenv("BOT_TOKEN")
 if not BOT_TOKEN:
     raise RuntimeError("BOT_TOKEN environment variable not set")
 
-# Simple in‑memory language store: {user_id: "en" or "hi"}
+# Simple in-memory language store: {user_id: "en" or "hi"}
 user_lang: dict[int, str] = {}
 
 # ---------- Texts ----------
 TEXTS = {
     "start": {
         "en": "Welcome to AOne Herbal. Please choose your language.",
-        "hi": "AOne Herbal me aapka swagat hai. Kripya bhasha chunen.",
+        "hi": "AOne Herbal में आपका स्वागत है। कृपया भाषा चुनें।",
     },
     "menu_title": {
         "en": "What would you like to do?",
-        "hi": "Aap kya karna chahte hain?",
+        "hi": "आप क्या करना चाहते हैं?",
     },
     "menu_buttons": {
         "en": ["Product info", "Order / Enquiry"],
-        "hi": ["Product jankari", "Order / Poochtaach"],
+        "hi": ["प्रोडक्ट जानकारी", "ऑर्डर / पूछताछ"],
     },
     "product_info": {
         "en": "Share the product name or concern (for example hairfall, gas, diabetes).",
-        "hi": "Product ka naam ya problem likhiye (jaise hairfall, gas, diabetes).",
+        "hi": "प्रोडक्ट का नाम या समस्या लिखें (जैसे हेयरफॉल, गैस, डायबिटीज)।",
     },
     "order_info": {
         "en": "Please share: Name, City, Product name, Contact (WhatsApp or Call).",
-        "hi": "Kripya bhejen: Naam, Shehar, Product ka naam, Contact (WhatsApp ya Call).",
+        "hi": "कृपया भेजें: नाम, शहर, प्रोडक्ट का नाम, संपर्क (WhatsApp या कॉल)।",
     },
     "unknown": {
         "en": "Type /start to see the menu again.",
-        "hi": "/start likhkar menu fir se dekhen.",
+        "hi": "/start लिखकर मेनू फिर से देखें।",
     },
 }
 
@@ -70,8 +70,10 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]
         ]
     )
-    user_lang[user_id] = "en"  # default
+    # default language until user chooses
+    user_lang[user_id] = "en"
     await update.message.reply_text(TEXTS["start"]["en"], reply_markup=keyboard)
+
 
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -89,13 +91,14 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
+    # Use saved language for menu actions
     lang = get_lang(user_id)
 
-    # Main menu actions
     if data == "menu_product":
         await query.edit_message_text(TEXTS["product_info"][lang])
     elif data == "menu_order":
         await query.edit_message_text(TEXTS["order_info"][lang])
+
 
 async def text_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
